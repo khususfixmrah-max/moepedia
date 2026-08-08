@@ -1,0 +1,538 @@
+[
+  {
+    "id": 1702123456792,
+    "user_id": 1702123456789,
+    "username": "budi123",
+    "message": "Saya sudah deposit tapi belum masuk",
+    "from_owner": false,
+    "timestamp": 1702123456792
+  },
+  {
+    "id": 1702123456793,
+    "user_id": 1702123456789,
+    "username": "Admin",
+    "message": "Mohon tunggu 5 menit, sedang kami cek",
+    "from_owner": true,
+    "timestamp": 1702123456793
+  },
+  {
+    "id": 1775651602221,
+    "user_id": 1702123456789,
+    "username": "budi123",
+    "message": "P",
+    "from_owner": false,
+    "timestamp": 1775651602221
+  },
+  {
+    "id": 1775651607253,
+    "user_id": 1702123456789,
+    "username": "Admin",
+    "message": "Ya",
+    "from_owner": true,
+    "timestamp": 1775651607253
+  },
+  {
+    "id": 1775651612488,
+    "user_id": 1702123456789,
+    "username": "budi123",
+    "message": "Kbp",
+    "from_owner": false,
+    "timestamp": 1775651612488
+  },
+  {
+    "id": 1775651619785,
+    "user_id": 1702123456789,
+    "username": "Admin",
+    "message": "Fefek",
+    "from_owner": true,
+    "timestamp": 1775651619785
+  },
+  {
+    "id": 1775740863040,
+    "user_id": 1702123456789,
+    "username": "budi123",
+    "message": "Ppp",
+    "from_owner": false,
+    "timestamp": 1775740863040
+  },
+  {
+    "id": 1775741334804,
+    "user_id": 1775741237547,
+    "username": "for4skyz",
+    "message": "halo",
+    "from_owner": false,
+    "timestamp": 1775741334804
+  },
+  {
+    "id": 1775958719824,
+    "user_id": 1775958657790,
+    "username": "dzx",
+    "message": "bagi kodee",
+    "from_owner": false,
+    "timestamp": 1775958719824
+  },
+  {
+    "id": 1775980907933,
+    "user_id": 1775980870434,
+    "username": "jean31",
+    "message": "L",
+    "from_owner": false,
+    "timestamp": 1775980907933
+  },
+  {
+    "id": 1775981678547,
+    "user_id": 1775980870434,
+    "username": "Admin",
+    "message": "?",
+    "from_owner": true,
+    "timestamp": 1775981678547
+  },
+  {
+    "id": 1776019085647,
+    "user_id": 1775837035696,
+    "username": "anjay",
+    "message": "Asu",
+    "from_owner": false,
+    "timestamp": 1776019085647
+  },
+  {
+    "id": 1776020267911,
+    "user_id": 1775837035696,
+    "username": "Admin",
+    "message": "Apa",
+    "from_owner": true,
+    "timestamp": 1776020267911
+  },
+  {
+    "id": 1776070671282,
+    "user_id": 1776008653983,
+    "username": "zyyroo",
+    "message": "saya deposit kok gak masuk",
+    "from_owner": false,
+    "timestamp": 1776070671282
+  },
+  {
+    "id": 1776491650136,
+    "user_id": 1776491616849,
+    "username": "byy",
+    "message": "P",
+    "from_owner": false,
+    "timestamp": 1776491650136
+  },
+  {
+    "id": 1776491657504,
+    "user_id": 1776491616849,
+    "username": "Admin",
+    "message": "Yyy",
+    "from_owner": true,
+    "timestamp": 1776491657504
+  },
+  {
+    "id": 1776491734634,
+    "user_id": 1776491616849,
+    "username": "byy",
+    "message": "stres jing 🗿",
+    "from_owner": false,
+    "timestamp": 1776491734634
+  },
+  {
+    "id": 1776491771511,
+    "user_id": 1776491616849,
+    "username": "byy",
+    "message": "tambahin tombol back disini pea, gw kalo mau out malah out se website nya sekalian",
+    "from_owner": false,
+    "timestamp": 1776491771511
+  },
+  {
+    "id": 1776491822654,
+    "user_id": 1776491616849,
+    "username": "Admin",
+    "message": "Sabar lh paok",
+    "from_owner": true,
+    "timestamp": 1776491822654
+  },
+  {
+    "id": 1776618241232,
+    "user_id": 1775855029574,
+    "username": "zeronexcode",
+    "message": "Oi WD in ",
+    "from_owner": false,
+    "timestamp": 1776618241232
+  },
+  {
+    "id": 1776618247274,
+    "user_id": 1775855029574,
+    "username": "zeronexcode",
+    "message": "Satset ",
+    "from_owner": false,
+    "timestamp": 1776618247274
+  },
+  {
+    "id": 1776638002285,
+    "user_id": 1775855029574,
+    "username": "Admin",
+    "message": "Liat jam lah",
+    "from_owner": true,
+    "timestamp": 1776638002285
+  },
+  {
+    "id": 1776860569008,
+    "user_id": 1776859451897,
+    "username": "flx",
+    "message": "Tes bos",
+    "from_owner": false,
+    "timestamp": 1776860569008
+  },
+  {
+    "id": 1776860931117,
+    "user_id": 1776859451897,
+    "username": "Admin",
+    "message": "Yo",
+    "from_owner": true,
+    "timestamp": 1776860931117
+  },
+  {
+    "id": 1777165465134,
+    "user_id": 1702123456789,
+    "username": "budi123",
+    "message": "Ppk",
+    "from_owner": false,
+    "timestamp": 1777165465134
+  },
+  {
+    "id": 1777165479237,
+    "user_id": 1702123456789,
+    "username": "Admin",
+    "message": "Asu",
+    "from_owner": true,
+    "timestamp": 1777165479237
+  },
+  {
+    "id": 1777377395768,
+    "user_id": 1776577054121,
+    "username": "kontolkuda",
+    "message": "hi ",
+    "from_owner": false,
+    "timestamp": 1777377395768
+  },
+  {
+    "id": 1777379311839,
+    "user_id": 1776577054121,
+    "username": "Admin",
+    "message": "Ya",
+    "from_owner": true,
+    "timestamp": 1777379311839
+  },
+  {
+    "id": 1777592588341,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Halo saya ingin intergasi",
+    "from_owner": false,
+    "timestamp": 1777592588341
+  },
+  {
+    "id": 1777609549727,
+    "user_id": 1777592457970,
+    "username": "Admin",
+    "message": "Integrasi dgn apa",
+    "from_owner": true,
+    "timestamp": 1777609549727
+  },
+  {
+    "id": 1777714149380,
+    "user_id": 1777706429683,
+    "username": "hanzsome",
+    "message": "p",
+    "from_owner": false,
+    "timestamp": 1777714149380
+  },
+  {
+    "id": 1777715130488,
+    "user_id": 1777706429683,
+    "username": "Admin",
+    "message": "Ya",
+    "from_owner": true,
+    "timestamp": 1777715130488
+  },
+  {
+    "id": 1777887073995,
+    "user_id": 1775876168486,
+    "username": "lannxv",
+    "message": "P",
+    "from_owner": false,
+    "timestamp": 1777887073995
+  },
+  {
+    "id": 1777887263202,
+    "user_id": 1775876168486,
+    "username": "Admin",
+    "message": "Y",
+    "from_owner": true,
+    "timestamp": 1777887263202
+  },
+  {
+    "id": 1778473336229,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Min ",
+    "from_owner": false,
+    "timestamp": 1778473336229
+  },
+  {
+    "id": 1778473355168,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Woi kenapa ga bisa buat qris tolong secepatnya di perbaiki ",
+    "from_owner": false,
+    "timestamp": 1778473355168
+  },
+  {
+    "id": 1778498487940,
+    "user_id": 1777592457970,
+    "username": "Admin",
+    "message": "Gak bisa gmn?",
+    "from_owner": true,
+    "timestamp": 1778498487940
+  },
+  {
+    "id": 1779004981333,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Oi",
+    "from_owner": false,
+    "timestamp": 1779004981333
+  },
+  {
+    "id": 1779004988700,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Gmn api nya cok",
+    "from_owner": false,
+    "timestamp": 1779004988700
+  },
+  {
+    "id": 1779005001119,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Info telegram lu gua mo ngomong sama lu",
+    "from_owner": false,
+    "timestamp": 1779005001119
+  },
+  {
+    "id": 1779005002624,
+    "user_id": 1777592457970,
+    "username": "Admin",
+    "message": "Knp",
+    "from_owner": true,
+    "timestamp": 1779005002624
+  },
+  {
+    "id": 1779005010863,
+    "user_id": 1777592457970,
+    "username": "Admin",
+    "message": "@csdigitalpedia",
+    "from_owner": true,
+    "timestamp": 1779005010863
+  },
+  {
+    "id": 1779005011813,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Masih ada 6k nih ga bisa di tarik",
+    "from_owner": false,
+    "timestamp": 1779005011813
+  },
+  {
+    "id": 1779005020460,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Api knp?",
+    "from_owner": false,
+    "timestamp": 1779005020460
+  },
+  {
+    "id": 1779005025406,
+    "user_id": 1777592457970,
+    "username": "Admin",
+    "message": "Minimal penarikan 10k kk",
+    "from_owner": true,
+    "timestamp": 1779005025406
+  },
+  {
+    "id": 1779005028756,
+    "user_id": 1777592457970,
+    "username": "Admin",
+    "message": "Knp?",
+    "from_owner": true,
+    "timestamp": 1779005028756
+  },
+  {
+    "id": 1779005038301,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Wet gua kasih tau",
+    "from_owner": false,
+    "timestamp": 1779005038301
+  },
+  {
+    "id": 1779005063328,
+    "user_id": 1777592457970,
+    "username": "Admin",
+    "message": "Aman aja\n\n💰 DEPOSIT BARU\n━━━━━━━━━━━━━━━━\n👤 User: wilzzofficial\n💰 Jumlah: Rp 20.000\n💳 Fee: Rp 15\n🧾 ID: DP1779005044609459",
+    "from_owner": true,
+    "timestamp": 1779005063328
+  },
+  {
+    "id": 1779005121159,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Lah",
+    "from_owner": false,
+    "timestamp": 1779005121160
+  },
+  {
+    "id": 1779005128440,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Eror apikey required ",
+    "from_owner": false,
+    "timestamp": 1779005128440
+  },
+  {
+    "id": 1779005133319,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Gua pas mau deposit ",
+    "from_owner": false,
+    "timestamp": 1779005133319
+  },
+  {
+    "id": 1779005163842,
+    "user_id": 1777592457970,
+    "username": "kenzi",
+    "message": "Nape nyak",
+    "from_owner": false,
+    "timestamp": 1779005163842
+  },
+  {
+    "id": 1779595008954,
+    "user_id": 1779594549001,
+    "username": "vanznumero",
+    "message": "p",
+    "from_owner": false,
+    "timestamp": 1779595008954
+  },
+  {
+    "id": 1779934666650,
+    "user_id": 1779697475013,
+    "username": "merefpedia",
+    "message": "Halo min,apikey nya eror ya? Soalnya ada customer yg deposit tapi qr gak muncul dan terjadi eror",
+    "from_owner": false,
+    "timestamp": 1779934666650
+  },
+  {
+    "id": 1779942153031,
+    "user_id": 1779697475013,
+    "username": "merefpedia",
+    "message": "Min",
+    "from_owner": false,
+    "timestamp": 1779942153031
+  },
+  {
+    "id": 1779942512555,
+    "user_id": 1779697475013,
+    "username": "Admin",
+    "message": "Iya",
+    "from_owner": true,
+    "timestamp": 1779942512555
+  },
+  {
+    "id": 1779943011974,
+    "user_id": 1779697475013,
+    "username": "merefpedia",
+    "message": "Saya sama customer saya udh payment ke qr",
+    "from_owner": false,
+    "timestamp": 1779943011974
+  },
+  {
+    "id": 1779943026478,
+    "user_id": 1779697475013,
+    "username": "merefpedia",
+    "message": "Status udh berhasil tapi disini malah ke cancel",
+    "from_owner": false,
+    "timestamp": 1779943026478
+  },
+  {
+    "id": 1779943040486,
+    "user_id": 1779697475013,
+    "username": "merefpedia",
+    "message": "Dan saldo gak masuk ",
+    "from_owner": false,
+    "timestamp": 1779943040486
+  },
+  {
+    "id": 1779943122344,
+    "user_id": 1779697475013,
+    "username": "merefpedia",
+    "message": "Mohon bantuannya ",
+    "from_owner": false,
+    "timestamp": 1779943122344
+  },
+  {
+    "id": 1779943149133,
+    "user_id": 1779697475013,
+    "username": "merefpedia",
+    "message": "Total ada saldo yg masuk seharusnya 7k ",
+    "from_owner": false,
+    "timestamp": 1779943149133
+  },
+  {
+    "id": 1780049948897,
+    "user_id": 1779530776152,
+    "username": "yaww",
+    "message": "Hi",
+    "from_owner": false,
+    "timestamp": 1780049948897
+  },
+  {
+    "id": 1780049959271,
+    "user_id": 1779530776152,
+    "username": "Admin",
+    "message": "Yaww",
+    "from_owner": true,
+    "timestamp": 1780049959271
+  },
+  {
+    "id": 1780574589417,
+    "user_id": 1779697475013,
+    "username": "merefpedia",
+    "message": "Gmn caranya nambahin button biar gak auto cek soalnya penting banget ini",
+    "from_owner": false,
+    "timestamp": 1780574589417
+  },
+  {
+    "id": 1780574643453,
+    "user_id": 1779697475013,
+    "username": "Admin",
+    "message": "Pake ai",
+    "from_owner": true,
+    "timestamp": 1780574643453
+  },
+  {
+    "id": 1780650229359,
+    "user_id": 1780650109058,
+    "username": "kamu1",
+    "message": "Mantap",
+    "from_owner": false,
+    "timestamp": 1780650229359
+  },
+  {
+    "id": 1780650443588,
+    "user_id": 1780650109058,
+    "username": "Admin",
+    "message": "Mau di band?",
+    "from_owner": true,
+    "timestamp": 1780650443588
+  }
+]
