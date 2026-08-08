@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Digital Pedia H2H - Payment Gateway</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0061ff;
+            --dark-blue: #004ecc;
+            --bg-light: #f4f7fe;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { width: 100%; max-width: 420px; }
+        .card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 32px 28px;
+            box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 75px;
+            height: 75px;
+            border-radius: 18px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0, 97, 255, 0.15);
+        }
+
+        h2 {
+            color: var(--text-dark);
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            color: #94a3b8;
+            font-size: 16px;
+        }
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 14px;
+            transition: 0.2s;
+            outline: none;
+            background: white;
+        }
+        .input-wrapper input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 97, 255, 0.1);
+        }
+        .input-wrapper .toggle-password {
+            position: absolute;
+            right: 14px;
+            left: auto;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .btn-main:hover {
+            background: var(--dark-blue);
+            transform: translateY(-1px);
+        }
+        .btn-main:active { transform: translateY(1px); }
+
+        .footer-text {
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer-text span {
+            color: var(--primary-blue);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .lupa-password {
+            float: right;
+            font-size: 11px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+        .alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .alert-success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+
+        .panel { display: none; animation: fadeIn 0.3s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hint {
+            font-size: 10px;
+            margin-top: 5px;
+            margin-left: 4px;
+            color: #94a3b8;
+        }
+        .hint-error { color: #ef4444; }
+        .hint-success { color: #10b981; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <img src="https://files.catbox.moe/ovxhs0.jpg" alt="Logo" class="profile-img">
+
+        <!-- Panel Login -->
+        <div id="loginPanel" class="panel active">
+            <h2>Login Dashboard</h2>
+            <p class="subtitle">Masuk menggunakan username</p>
+            
+            <div id="loginAlert"></div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="loginUsername" placeholder="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <a id="forgotPasswordLink" class="lupa-password" style="cursor: pointer;">Lupa Password?</a>
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="••••••••">
+                    <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('loginPassword', this)"></i>
+                </div>
+            </div>
+
+            <button class="btn-main" id="doLogin">Masuk <i class="fa-solid fa-arrow-right"></i></button>
+            
+            <p class="footer-text">Belum punya akun? <span onclick="switchPanel('registerPanel')">Daftar sekarang</span></p>
+        </div>
+
+        <!-- Panel Register -->
+        <div id="registerPanel" class="panel">
+            <h2>Buat Akun Baru</h2>
+            <p class="subtitle">Daftar untuk mulai menggunakan layanan</p>
+
+            <div id="registerAlert"></div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="regUsername" placeholder="hanya huruf kecil & angka">
+                </div>
+                <div class="hint" id="userHint">3-20 karakter, hanya a-z dan 0-9</div>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="regPassword" placeholder="minimal 4 karakter">
+                    <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('regPassword', this)"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Konfirmasi Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <input type="password" id="regConfirmPassword" placeholder="ulangi password">
+                    <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('regConfirmPassword', this)"></i>
+                </div>
+            </div>
+
+            <button class="btn-main" id="doRegister">Daftar Sekarang <i class="fa-solid fa-user-plus"></i></button>
+            
+            <p class="footer-text">Sudah punya akun? <span onclick="switchPanel('loginPanel')">Masuk di sini</span></p>
+        </div>
+
+        <!-- Modal Lupa Password (sederhana arahkan ke Telegram) -->
+        <div id="forgotModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+            <div style="background: white; border-radius: 24px; padding: 28px; max-width: 320px; text-align: center; margin: 20px;">
+                <i class="fas fa-headset" style="font-size: 48px; color: #0061ff; margin-bottom: 16px;"></i>
+                <h3 style="margin-bottom: 12px;">Hubungi Customer Support</h3>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 24px;">Silakan hubungi CS untuk mereset password Anda melalui Telegram.</p>
+                <a href="https://t.me/csdigitalpedia" target="_blank" style="display: inline-block; background: #0061ff; color: white; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 600;">Hubungi via Telegram</a>
+                <div style="margin-top: 16px;">
+                    <button onclick="closeForgotModal()" style="background: none; border: none; color: #64748b; cursor: pointer;">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Switch Panel
+    function switchPanel(panelId) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(panelId).classList.add('active');
+        document.getElementById('loginAlert').innerHTML = '';
+        document.getElementById('registerAlert').innerHTML = '';
+    }
+
+    // Toggle Password Visibility
+    function togglePassword(inputId, iconEl) {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            iconEl.classList.remove('fa-eye');
+            iconEl.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            iconEl.classList.remove('fa-eye-slash');
+            iconEl.classList.add('fa-eye');
+        }
+    }
+
+    // Validasi username realtime
+    const regUser = document.getElementById('regUsername');
+    const userHint = document.getElementById('userHint');
+    
+    if (regUser) {
+        regUser.oninput = (e) => {
+            let val = e.target.value.toLowerCase();
+            e.target.value = val;
+            const regex = /^[a-z0-9]*$/;
+            if (!regex.test(val) && val !== '') {
+                userHint.innerHTML = '⚠️ Hanya huruf kecil a-z dan angka 0-9!';
+                userHint.className = 'hint hint-error';
+            } else if (val.length < 3 && val.length > 0) {
+                userHint.innerHTML = '⚠️ Minimal 3 karakter';
+                userHint.className = 'hint hint-error';
+            } else if (val.length > 20) {
+                userHint.innerHTML = '⚠️ Maksimal 20 karakter';
+                userHint.className = 'hint hint-error';
+            } else if (val.length >= 3 && val.length <= 20) {
+                userHint.innerHTML = '✓ Username tersedia';
+                userHint.className = 'hint hint-success';
+            } else {
+                userHint.innerHTML = '3-20 karakter, hanya a-z dan 0-9';
+                userHint.className = 'hint';
+            }
+        };
+    }
+
+    // LOGIN
+    document.getElementById('doLogin').onclick = async () => {
+        const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+        const password = document.getElementById('loginPassword').value;
+        const alertDiv = document.getElementById('loginAlert');
+
+        if (!username || !password) {
+            alertDiv.innerHTML = '<div class="alert alert-error">Username dan password harus diisi!</div>';
+            return;
+        }
+
+        const btn = document.getElementById('doLogin');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+        try {
+            const res = await axios.post('/api/login', { username, password });
+            if (res.data.success) {
+                localStorage.setItem('user', JSON.stringify(res.data.user));
+                window.location.href = 'dashboard.html';
+            } else {
+                alertDiv.innerHTML = `<div class="alert alert-error">${res.data.error || 'Login gagal'}</div>`;
+            }
+        } catch(e) {
+            alertDiv.innerHTML = `<div class="alert alert-error">${e.response?.data?.error || 'Terjadi kesalahan server'}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    };
+
+    // REGISTER
+    document.getElementById('doRegister').onclick = async () => {
+        const username = document.getElementById('regUsername').value.trim().toLowerCase();
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regConfirmPassword').value;
+        const alertDiv = document.getElementById('registerAlert');
+
+        const usernameRegex = /^[a-z0-9]{3,20}$/;
+        if (!username || !usernameRegex.test(username)) {
+            alertDiv.innerHTML = '<div class="alert alert-error">Username harus 3-20 karakter, hanya huruf kecil a-z dan angka!</div>';
+            return;
+        }
+        if (!password || password.length < 4) {
+            alertDiv.innerHTML = '<div class="alert alert-error">Password minimal 4 karakter!</div>';
+            return;
+        }
+        if (password !== confirm) {
+            alertDiv.innerHTML = '<div class="alert alert-error">Konfirmasi password tidak cocok!</div>';
+            return;
+        }
+
+        const btn = document.getElementById('doRegister');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+        try {
+            const res = await axios.post('/api/register', { username, password });
+            if (res.data.success) {
+                alertDiv.innerHTML = '<div class="alert alert-success">✅ Pendaftaran berhasil! Silakan login.</div>';
+                setTimeout(() => {
+                    switchPanel('loginPanel');
+                    document.getElementById('loginUsername').value = username;
+                }, 1500);
+            } else {
+                alertDiv.innerHTML = `<div class="alert alert-error">${res.data.error || 'Gagal mendaftar'}</div>`;
+            }
+        } catch(e) {
+            alertDiv.innerHTML = `<div class="alert alert-error">${e.response?.data?.error || 'Terjadi kesalahan server'}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    };
+
+    // Lupa Password -> Buka modal arahkan ke Telegram
+    function openForgotModal() {
+        document.getElementById('forgotModal').style.display = 'flex';
+    }
+    function closeForgotModal() {
+        document.getElementById('forgotModal').style.display = 'none';
+    }
+    document.getElementById('forgotPasswordLink').onclick = openForgotModal;
+
+    // Enter key support
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const activePanel = document.querySelector('.panel.active');
+                if (activePanel.id === 'loginPanel') {
+                    document.getElementById('doLogin').click();
+                } else {
+                    document.getElementById('doRegister').click();
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

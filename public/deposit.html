@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Deposit QRIS - DigitalPedia</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0061ff;
+            --dark-blue: #004ecc;
+            --sidebar-bg: #0f172a;
+            --bg-body: #f4f7fe;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: #1e293b; }
+
+        /* NAVBAR MOBILE */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            background: var(--white);
+            padding: 0 20px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 999;
+        }
+        .menu-toggle {
+            font-size: 22px;
+            color: var(--sidebar-bg);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .mobile-brand { font-weight: 700; color: var(--primary-blue); font-size: 16px; }
+
+        /* SIDEBAR */
+        .sidebar { 
+            width: 260px; background: var(--sidebar-bg); color: white; 
+            position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; 
+            transition: var(--transition); 
+        }
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .sidebar-header img { width: 60px; height: 60px; border-radius: 15px; margin-bottom: 12px; object-fit: cover; border: 2px solid var(--primary-blue); }
+        .sidebar-header h2 { font-size: 16px; font-weight: 700; color: #fff; }
+        
+        .close-sidebar { display: none; position: absolute; top: 20px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; }
+
+        .nav-menu { padding: 20px 15px; }
+        .nav-item { 
+            display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+            color: #94a3b8; text-decoration: none; border-radius: 12px; 
+            margin-bottom: 5px; transition: var(--transition); font-size: 14px; font-weight: 600;
+        }
+        .nav-item:hover, .nav-item.active { background: var(--primary-blue); color: white; }
+        .nav-item i { width: 20px; text-align: center; font-size: 18px; }
+
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 998; }
+
+        /* MAIN CONTENT */
+        .main-content { margin-left: 260px; padding: 30px; transition: var(--transition); }
+
+        /* DEPOSIT UI */
+        .deposit-container { max-width: 600px; margin: 0 auto; }
+        .card { 
+            background: white; padding: 30px; border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); margin-bottom: 25px;
+        }
+        .card-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper span { position: absolute; left: 15px; font-weight: 800; color: #cbd5e1; }
+        .input-wrapper input { 
+            width: 100%; padding: 15px 15px 15px 45px; border-radius: 14px; 
+            border: 2px solid #f1f5f9; background: #f8fafc; font-size: 18px; 
+            font-weight: 800; outline: none; transition: var(--transition);
+        }
+        .input-wrapper input:focus { border-color: var(--primary-blue); background: white; }
+
+        .btn-primary { 
+            width: 100%; background: var(--sidebar-bg); color: white; border: none; 
+            padding: 16px; border-radius: 14px; font-weight: 700; cursor: pointer; 
+            font-size: 15px; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn-success { background: #10b981 !important; }
+
+        /* QR SECTION */
+        #qrisArea { display: none; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .qris-display { text-align: center; }
+        .qr-frame { 
+            background: white; padding: 15px; border-radius: 20px; 
+            border: 2px dashed #e2e8f0; width: 250px; margin: 0 auto 20px;
+        }
+        .qr-frame img { width: 100%; height: auto; display: block; }
+        
+        .detail-box { background: #f8fafc; padding: 15px; border-radius: 16px; margin-bottom: 20px; text-align: left; }
+        .detail-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; }
+        .detail-row.total { border-top: 1px solid #e2e8f0; margin-top: 10px; padding-top: 10px; font-weight: 800; color: var(--primary-blue); font-size: 16px; }
+
+        .countdown-timer { background: #fef2f2; color: #dc2626; padding: 10px; border-radius: 12px; font-size: 14px; font-weight: 700; margin-bottom: 15px; text-align: center; }
+
+        @media (max-width: 991px) {
+            .mobile-header { display: flex; }
+            .close-sidebar { display: block; }
+            .sidebar { left: -260px; }
+            .sidebar.active { left: 0; }
+            .sidebar-overlay.active { display: block; }
+            .main-content { margin-left: 0; padding: 90px 20px 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mobile-header">
+    <button class="menu-toggle" id="openMenu"><i class="fa-solid fa-bars"></i></button>
+    <div class="mobile-brand">DigitalPedia</div>
+    <div style="width: 22px;"></div>
+</div>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <button class="close-sidebar" id="closeMenu"><i class="fa-solid fa-xmark"></i></button>
+        <img src="https://files.catbox.moe/ovxhs0.jpg" alt="Logo">
+        <h2>DigitalPedia</h2>
+    </div>
+    <div class="nav-menu">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> <span>Dashboard</span></a>
+        <a href="deposit.html" class="nav-item active"><i class="fa-solid fa-wallet"></i> <span>Deposit</span></a>
+        <a href="riwayat.html" class="nav-item"><i class="fa-solid fa-history"></i> <span>Riwayat</span></a>
+        <a href="profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i> <span>Profile & API</span></a>
+        <a href="#" class="nav-item" id="logoutBtn" style="color: #ff4d4d; margin-top: 20px;"><i class="fa-solid fa-sign-out-alt"></i> <span>Keluar</span></a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="deposit-container">
+        
+        <div class="card">
+            <div class="card-title">
+                <i class="fa-solid fa-file-invoice-dollar" style="color: var(--primary-blue);"></i>
+                Deposit QRIS Otomatis
+            </div>
+            <div class="form-group">
+                <label>Nominal Deposit (Rp500 - Rp1.000.000)</label>
+                <div class="input-wrapper">
+                    <span>Rp</span>
+                    <input type="number" id="amountInput" placeholder="Masukkan nominal" min="500" max="1000000">
+                </div>
+            </div>
+            <button class="btn-primary" id="btnGen">
+                <i class="fa-solid fa-qrcode"></i> Buat Invoice
+            </button>
+        </div>
+
+        <div id="qrisArea" class="card">
+            <div class="qris-display">
+                <div style="background: #fff7ed; color: #c2410c; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 700; margin-bottom: 20px;">
+                    <i class="fa-solid fa-clock"></i> MENUNGGU PEMBAYARAN
+                </div>
+                
+                <div id="countdownTimer" class="countdown-timer" style="display: none;">
+                    <i class="fa-regular fa-hourglass-half"></i> Kadaluarsa dalam: <span id="timer">59:59</span>
+                </div>
+                
+                <div class="qr-frame">
+                    <img id="qrImg" src="" alt="QRIS Code">
+                </div>
+
+                <div class="detail-box">
+                    <div class="detail-row"><span>ID Tagihan</span> <span id="outId">#...</span></div>
+                    <div class="detail-row"><span>Admin (Fee)</span> <span id="outFee">Rp 0</span></div>
+                    <div class="detail-row total"><span>Total Bayar</span> <span id="outTotal">Rp 0</span></div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-primary btn-success" id="btnCheck">
+                        <i class="fa-solid fa-rotate"></i> Saya Sudah Bayar
+                    </button>
+                    <button class="btn-primary" id="btnCancel" style="background: #f1f5f9; color: #64748b;">
+                        <i class="fa-solid fa-ban"></i> Batal
+                    </button>
+                </div>
+                <p style="font-size: 11px; color: #94a3b8; margin-top: 15px; text-align: center;">
+                    <i class="fa-solid fa-info-circle"></i> Jangan batalkan jika sudah membayar!<br>QRIS kadaluarsa dalam 1 jam.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let activeTrxId = null;
+    let countdownInterval = null;
+    let expiredAt = null;
+    let currentUser = null;
+    
+    // ========== AMBIL USER DARI LOCALSTORAGE ==========
+    try {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+            window.location.href = '/login.html';
+        }
+        currentUser = JSON.parse(userStr);
+        
+        if (!currentUser || !currentUser.id) {
+            throw new Error('User tidak valid');
+        }
+        
+        console.log('User loaded:', currentUser.username, 'ID:', currentUser.id);
+    } catch(e) {
+        console.error('Error load user:', e);
+        alert('Session expired. Silakan login kembali.');
+        localStorage.clear();
+        window.location.href = '/login.html';
+    }
+
+    // ========== SIDEBAR LOGIC ==========
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('openMenu').onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); }
+    document.getElementById('closeMenu').onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); }
+    overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); }
+
+    // ========== FORMAT RUPIAH ==========
+    function formatIDR(n) { 
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n || 0); 
+    }
+
+    // ========== RESET DEPOSIT ==========
+    function resetDeposit() {
+        if (countdownInterval) clearInterval(countdownInterval);
+        document.getElementById('qrisArea').style.display = 'none';
+        document.getElementById('amountInput').value = '';
+        activeTrxId = null;
+        expiredAt = null;
+    }
+
+    // ========== COUNTDOWN TIMER ==========
+    function startCountdown(expireTimestamp) {
+        if (countdownInterval) clearInterval(countdownInterval);
+        
+        const timerElement = document.getElementById('timer');
+        const timerContainer = document.getElementById('countdownTimer');
+        timerContainer.style.display = 'block';
+        
+        countdownInterval = setInterval(() => {
+            const now = Date.now();
+            const remaining = expireTimestamp - now;
+            
+            if (remaining <= 0) {
+                clearInterval(countdownInterval);
+                timerContainer.style.display = 'none';
+                alert('⏰ Waktu pembayaran telah habis! Silakan buat invoice baru.');
+                resetDeposit();
+                return;
+            }
+            
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    // ========== CREATE INVOICE ==========
+    async function createInvoice() {
+        const amt = parseInt(document.getElementById('amountInput').value);
+        const btn = document.getElementById('btnGen');
+
+        if (!amt || amt < 500) {
+            alert('Minimal deposit Rp500');
+            return;
+        }
+        if (amt > 1000000) {
+            alert('Maksimal deposit Rp1.000.000');
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+
+        try {
+            const res = await axios.post('/api/depo/create', {
+                user_id: currentUser.id,
+                username: currentUser.username,
+                nominal: amt
+            });
+
+            if (res.data.success) {
+                const d = res.data.deposit;
+                activeTrxId = d.id;
+                expiredAt = d.expired_at;
+                
+                const qrImg = document.getElementById('qrImg');
+                qrImg.src = d.qr_image;
+                qrImg.onerror = function() {
+                    console.error('QR Image failed to load');
+                    this.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect width="200" height="200" fill="%23f1f5f9"/%3E%3Ctext x="100" y="100" text-anchor="middle" dy=".3em" fill="%2364748b" font-size="12"%3EQR Code%3C/text%3E%3C/svg%3E';
+                };
+                
+                document.getElementById('outId').innerHTML = '#' + d.id;
+                document.getElementById('outFee').innerHTML = formatIDR(d.fee);
+                document.getElementById('outTotal').innerHTML = formatIDR(d.total_payment);
+                
+                document.getElementById('qrisArea').style.display = 'block';
+                
+                if (expiredAt) startCountdown(expiredAt);
+                document.getElementById('qrisArea').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                alert('Gagal membuat invoice: ' + (res.data.error || 'Unknown error'));
+            }
+        } catch (e) {
+            console.error('Error create deposit:', e);
+            let errorMsg = 'Gagal membuat invoice';
+            if (e.response) {
+                errorMsg = e.response.data?.error || errorMsg;
+            } else if (e.request) {
+                errorMsg = 'Tidak dapat terhubung ke server';
+            } else {
+                errorMsg = e.message;
+            }
+            alert('Error: ' + errorMsg);
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-qrcode"></i> Buat Invoice';
+    }
+
+    // ========== CEK STATUS PEMBAYARAN ==========
+    async function checkPaymentStatus() {
+        if (!activeTrxId) {
+            alert('Tidak ada invoice aktif');
+            return;
+        }
+        
+        const btn = document.getElementById('btnCheck');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengecek...';
+
+        try {
+            const res = await axios.post('/api/depo/status', {
+                deposit_id: activeTrxId,
+                user_id: currentUser.id
+            });
+
+            if (res.data.status === 'success') {
+                alert('✅ Pembayaran Berhasil! Saldo telah ditambahkan.');
+                window.location.href = 'dashboard.html';
+            } else if (res.data.status === 'expired') {
+                alert('⏰ Invoice sudah kadaluarsa. Silakan buat invoice baru.');
+                resetDeposit();
+            } else if (res.data.status === 'canceled') {
+                alert('❌ Invoice sudah dibatalkan.');
+                resetDeposit();
+            } else {
+                const msg = res.data.message || 'Pembayaran belum terdeteksi';
+                alert('⏳ ' + msg);
+            }
+        } catch (e) {
+            console.error('Error cek status:', e);
+            alert('Gagal mengecek status. Silakan coba lagi.');
+        }
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Saya Sudah Bayar';
+    }
+
+    // ========== BATALKAN DEPOSIT ==========
+    async function cancelDeposit() {
+        if (!activeTrxId) {
+            alert('Tidak ada invoice aktif');
+            return;
+        }
+        
+        if (!confirm('Batalkan transaksi ini? QRIS tidak akan bisa digunakan lagi.')) return;
+        
+        const btn = document.getElementById('btnCancel');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membatalkan...';
+
+        try {
+            const res = await axios.post('/api/depo/cancel', {
+                deposit_id: activeTrxId,
+                user_id: currentUser.id
+            });
+
+            if (res.data.success) {
+                alert('✅ Deposit berhasil dibatalkan.');
+                resetDeposit();
+            } else {
+                alert('Gagal membatalkan: ' + (res.data.error || 'Unknown error'));
+            }
+        } catch (e) {
+            console.error('Error cancel deposit:', e);
+            alert('Gagal membatalkan deposit. Silakan coba lagi.');
+        }
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-ban"></i> Batal';
+    }
+
+    // ========== EVENT LISTENER ==========
+    document.getElementById('btnGen').onclick = createInvoice;
+    document.getElementById('btnCheck').onclick = checkPaymentStatus;
+    document.getElementById('btnCancel').onclick = cancelDeposit;
+
+    // ========== LOGOUT ==========
+    document.getElementById('logoutBtn').onclick = () => {
+        localStorage.clear();
+        window.location.href = '/';
+    };
+</script>
+</body>
+</html>

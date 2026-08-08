@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Dokumentasi API - Digital Pedia H2H</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #eff6ff;
+            --sidebar-bg: #0f172a;
+            --bg-body: #f8fafc;
+            --white: #ffffff;
+            --card-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.01);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: #1e293b; line-height: 1.6; }
+
+        /* SIDEBAR */
+        .sidebar { width: 280px; background: var(--sidebar-bg); color: white; position: fixed; left: 0; top: 0; bottom: 0; overflow-y: auto; z-index: 1000; transition: var(--transition); }
+        .sidebar-header { padding: 40px 24px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+        .sidebar-header img { width: 65px; height: 65px; border-radius: 18px; margin-bottom: 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 12px; box-shadow: 0 10px 20px rgba(59,130,246,0.3); }
+        .sidebar-header h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+        .sidebar-header p { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+
+        .nav-section { padding: 0 16px; margin-bottom: 25px; }
+        .nav-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #475569; padding: 0 12px; margin-bottom: 12px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; margin: 4px 0; border-radius: 12px; cursor: pointer; color: #94a3b8; text-decoration: none; transition: var(--transition); }
+        .nav-item i { font-size: 18px; width: 22px; }
+        .nav-item span { font-size: 14px; font-weight: 500; }
+        .nav-item:hover { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .nav-item.active i, .nav-item.active span { color: white; }
+
+        .main-content { margin-left: 280px; padding: 40px 48px; transition: var(--transition); }
+
+        /* CARDS */
+        .doc-card { background: var(--white); border-radius: 24px; padding: 32px; box-shadow: var(--card-shadow); margin-bottom: 28px; border: 1px solid #e2e8f0; transition: var(--transition); }
+        .doc-card:hover { box-shadow: 0 25px 30px -12px rgba(0, 0, 0, 0.1); }
+        .doc-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: #0f172a; letter-spacing: -0.3px; }
+        .doc-card h2 i { color: var(--primary); font-size: 24px; background: var(--primary-light); padding: 8px; border-radius: 14px; }
+        .doc-card p { font-size: 14px; color: #475569; margin-bottom: 16px; line-height: 1.6; }
+
+        /* CODE BLOCKS */
+        .code-container { background: #0f172a; color: #e2e8f0; padding: 20px; border-radius: 16px; font-family: 'Fira Code', monospace; font-size: 13px; position: relative; margin: 16px 0; overflow-x: auto; border: 1px solid #1e293b; }
+        .method-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; background: var(--primary); margin-right: 12px; letter-spacing: 0.5px; }
+        .endpoint-url { font-family: monospace; background: #f1f5f9; padding: 6px 14px; border-radius: 10px; font-size: 13px; color: var(--primary-dark); font-weight: 600; border: 1px solid #e2e8f0; }
+
+        /* TABLES */
+        .param-table { width: 100%; border-collapse: collapse; margin-top: 16px; border-radius: 12px; overflow: hidden; }
+        .param-table th { text-align: left; padding: 12px 16px; background: #f8fafc; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; border-bottom: 1px solid #e2e8f0; }
+        .param-table td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .param-table tr:last-child td { border-bottom: none; }
+        .param-name { font-family: monospace; color: var(--primary); font-weight: 700; background: var(--primary-light); padding: 2px 8px; border-radius: 6px; display: inline-block; font-size: 12px; }
+        .required-tag { color: #ef4444; font-size: 10px; font-weight: 700; background: #fef2f2; padding: 2px 8px; border-radius: 20px; margin-left: 8px; display: inline-block; }
+
+        /* TABS */
+        .tab-buttons { display: flex; gap: 8px; margin: 20px 0 16px; flex-wrap: wrap; }
+        .tab-btn { padding: 8px 18px; background: #f1f5f9; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 12px; color: #475569; transition: var(--transition); }
+        .tab-btn:hover { background: #e2e8f0; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3); }
+        .code-tab { display: none; }
+        .code-tab.active { display: block; }
+
+        /* CARD GRADIENT */
+        .gradient-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; }
+        .gradient-card h2 { color: white; }
+        .gradient-card p { color: #94a3b8; }
+
+        /* FLOATING CHAT */
+        .float-chat { position: fixed; right: 28px; bottom: 28px; width: 56px; height: 56px; background: var(--primary); color: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4); cursor: pointer; transition: var(--transition); z-index: 9999; text-decoration: none; }
+        .float-chat:hover { transform: scale(1.05) translateY(-3px); background: var(--primary-dark); }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .sidebar { width: 100px; }
+            .sidebar-header h2, .sidebar-header p, .nav-section-title, .nav-item span { display: none; }
+            .sidebar-header img { width: 48px; height: 48px; padding: 8px; }
+            .nav-item { justify-content: center; padding: 12px; }
+            .nav-item i { font-size: 22px; width: auto; }
+            .main-content { margin-left: 100px; padding: 24px; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 1001; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 20px; }
+            .doc-card { padding: 20px; }
+            .param-table th, .param-table td { padding: 10px 12px; }
+            .code-container { font-size: 11px; padding: 14px; }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://files.catbox.moe/jtxoyq.jpg" alt="Logo">
+            <h2>Digital Pedia</h2>
+            <p>API Documentation</p>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Menu Utama</div>
+            <a href="dashboard.html" class="nav-item"><i class="fas fa-home-alt"></i><span>Beranda</span></a>
+            <a href="deposit.html" class="nav-item"><i class="fas fa-wallet"></i><span>Isi Saldo</span></a>
+            <a href="riwayat.html" class="nav-item"><i class="fas fa-clock-rotate-left"></i><span>Riwayat</span></a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Konfigurasi</div>
+            <a href="profile.html" class="nav-item"><i class="fas fa-user-gear"></i><span>Profil & API</span></a>
+            <a href="docs.html" class="nav-item active"><i class="fas fa-file-code"></i><span>Dokumentasi</span></a>
+        </div>
+
+        <div class="nav-section" style="margin-top: 40px;">
+            <a href="#" class="nav-item" id="logoutBtn" style="color: #f87171;">
+                <i class="fas fa-power-off"></i><span>Keluar Sesi</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="doc-card">
+            <h2><i class="fas fa-bolt"></i> Informasi Dasar</h2>
+            <p>Gunakan Base URL berikut untuk semua permintaan API:</p>
+            <div class="code-container" style="background: #0f172a; border-left: 4px solid var(--primary);">
+                https://pay.digitalpedia.web.id/api
+            </div>
+            <p style="margin-top: 20px;"><strong>Autentikasi:</strong> Masukkan API Key Anda pada header setiap request.</p>
+            <div class="code-container">
+                "headers": { "x-api-key": "dp_your_api_key_here" }
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <h2><i class="fas fa-wallet"></i> 1. Cek Saldo</h2>
+            <p>Gunakan endpoint ini untuk mengambil informasi saldo terbaru akun Anda.</p>
+            <div style="margin: 15px 0;">
+                <span class="method-badge">POST</span>
+                <code class="endpoint-url">/api/balance</code>
+            </div>
+            <table class="param-table">
+                <tr><th>Header</th><th>Deskripsi</th></tr>
+                <tr><td class="param-name">x-api-key</td><td>API Key unik Anda <span class="required-tag">WAJIB</span></td></tr>
+            </table>
+            
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showCode('balance-js')">JavaScript</button>
+                <button class="tab-btn" onclick="showCode('balance-php')">PHP</button>
+                <button class="tab-btn" onclick="showCode('balance-py')">Python</button>
+            </div>
+            
+            <div id="balance-js" class="code-tab active">
+                <div class="code-container">
+const axios = require('axios');<br><br>
+const API_KEY = 'dp_your_api_key_here';<br>
+const BASE_URL = 'https://pay.digitalpedia.web.id/api';<br><br>
+async function getBalance() {<br>
+&nbsp;&nbsp;try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const res = await axios.post(`${BASE_URL}/balance`, {}, {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers: { 'x-api-key': API_KEY }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log(res.data);<br>
+&nbsp;&nbsp;} catch(err) { console.error(err.response?.data); }<br>
+}<br>
+getBalance();
+                </div>
+            </div>
+            <div id="balance-php" class="code-tab">
+                <div class="code-container">
+&lt;?php<br>
+$apiKey = 'dp_your_api_key_here';<br>
+$url = 'https://pay.digitalpedia.web.id/api/balance';<br><br>
+$ch = curl_init($url);<br>
+curl_setopt($ch, CURLOPT_POST, true);<br>
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['x-api-key: ' . $apiKey]);<br>
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);<br>
+$response = curl_exec($ch);<br>
+echo $response;<br>
+?&gt;
+                </div>
+            </div>
+            <div id="balance-py" class="code-tab">
+                <div class="code-container">
+import requests<br><br>
+API_KEY = 'dp_your_api_key_here'<br>
+url = 'https://pay.digitalpedia.web.id/api/balance'<br><br>
+response = requests.post(url, headers={'x-api-key': API_KEY})<br>
+print(response.json())
+                </div>
+            </div>
+            
+            <div class="code-container">
+{
+  "success": true,
+  "balance": 75000,
+  "username": "wilzzofficial"
+}
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <h2><i class="fas fa-qrcode"></i> 2. Buat Deposit (QRIS)</h2>
+            <p>Membuat request deposit otomatis melalui jalur QRIS. Minimal Rp10.000.</p>
+            <div style="margin: 15px 0;">
+                <span class="method-badge">POST</span>
+                <code class="endpoint-url">/api/deposit/create</code>
+            </div>
+            <table class="param-table">
+                <tr><th>Header</th><th>Deskripsi</th></tr>
+                <tr><td class="param-name">x-api-key</td><td>API Key unik Anda <span class="required-tag">WAJIB</span></td></tr>
+                <tr><th>Body (JSON)</th><th>Tipe</th><th>Deskripsi</th></tr>
+                <tr><td class="param-name">amount</td><td>Integer</td><td>Jumlah nominal deposit (min Rp10.000) <span class="required-tag">WAJIB</span></td></tr>
+            </table>
+            
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showCode('deposit-js')">JavaScript</button>
+                <button class="tab-btn" onclick="showCode('deposit-php')">PHP</button>
+                <button class="tab-btn" onclick="showCode('deposit-py')">Python</button>
+            </div>
+            
+            <div id="deposit-js" class="code-tab active">
+                <div class="code-container">
+const axios = require('axios');<br><br>
+const API_KEY = 'dp_your_api_key_here';<br>
+const BASE_URL = 'https://pay.digitalpedia.web.id/api';<br><br>
+async function createDeposit(amount) {<br>
+&nbsp;&nbsp;try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const res = await axios.post(`${BASE_URL}/deposit/create`, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ amount },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ headers: { 'x-api-key': API_KEY } }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log(res.data);<br>
+&nbsp;&nbsp;} catch(err) { console.error(err.response?.data); }<br>
+}<br>
+createDeposit(50000);
+                </div>
+            </div>
+            <div id="deposit-php" class="code-tab">
+                <div class="code-container">
+&lt;?php<br>
+$apiKey = 'dp_your_api_key_here';<br>
+$amount = 50000;<br>
+$url = 'https://pay.digitalpedia.web.id/api/deposit/create';<br><br>
+$data = json_encode(['amount' => $amount]);<br>
+$ch = curl_init($url);<br>
+curl_setopt($ch, CURLOPT_POST, true);<br>
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['x-api-key: ' . $apiKey, 'Content-Type: application/json']);<br>
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);<br>
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);<br>
+$response = curl_exec($ch);<br>
+echo $response;<br>
+?&gt;
+                </div>
+            </div>
+            <div id="deposit-py" class="code-tab">
+                <div class="code-container">
+import requests<br><br>
+API_KEY = 'dp_your_api_key_here'<br>
+url = 'https://pay.digitalpedia.web.id/api/deposit/create'<br><br>
+response = requests.post(url, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;json={'amount': 50000},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers={'x-api-key': API_KEY}<br>
+)<br>
+print(response.json())
+                </div>
+            </div>
+            
+            <div class="code-container">
+{
+  "success": true,
+  "deposit": {
+    "id": "DP-1002",
+    "amount": 50000,
+    "fee": 2500,
+    "total_payment": 52500,
+    "qr_image": "https://link-to-qris.png",
+    "status": "pending",
+    "expired_at": 1748512345678
+  }
+}
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <h2><i class="fas fa-sync-alt"></i> 3. Cek Status Deposit</h2>
+            <p>Mengecek apakah transaksi sudah dibayar atau belum berdasarkan ID deposit.</p>
+            <div style="margin: 15px 0;">
+                <span class="method-badge">POST</span>
+                <code class="endpoint-url">/api/deposit/status</code>
+            </div>
+            <table class="param-table">
+                <tr><th>Header</th><th>Deskripsi</th></tr>
+                <tr><td class="param-name">x-api-key</td><td>API Key unik Anda <span class="required-tag">WAJIB</span></td></tr>
+                <tr><th>Body (JSON)</th><th>Tipe</th><th>Deskripsi</th></tr>
+                <tr><td class="param-name">deposit_id</td><td>String</td><td>ID Transaksi dari create deposit <span class="required-tag">WAJIB</span></td></tr>
+            </table>
+            
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showCode('status-js')">JavaScript</button>
+                <button class="tab-btn" onclick="showCode('status-php')">PHP</button>
+                <button class="tab-btn" onclick="showCode('status-py')">Python</button>
+            </div>
+            
+            <div id="status-js" class="code-tab active">
+                <div class="code-container">
+const axios = require('axios');<br><br>
+const API_KEY = 'dp_your_api_key_here';<br>
+const BASE_URL = 'https://pay.digitalpedia.web.id/api';<br><br>
+async function checkStatus(depositId) {<br>
+&nbsp;&nbsp;try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const res = await axios.post(`${BASE_URL}/deposit/status`, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ deposit_id: depositId },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ headers: { 'x-api-key': API_KEY } }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log(res.data);<br>
+&nbsp;&nbsp;} catch(err) { console.error(err.response?.data); }<br>
+}<br>
+checkStatus('DP-1002');
+                </div>
+            </div>
+            <div id="status-php" class="code-tab">
+                <div class="code-container">
+&lt;?php<br>
+$apiKey = 'dp_your_api_key_here';<br>
+$depositId = 'DP-1002';<br>
+$url = 'https://pay.digitalpedia.web.id/api/deposit/status';<br><br>
+$data = json_encode(['deposit_id' => $depositId]);<br>
+$ch = curl_init($url);<br>
+curl_setopt($ch, CURLOPT_POST, true);<br>
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['x-api-key: ' . $apiKey, 'Content-Type: application/json']);<br>
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);<br>
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);<br>
+$response = curl_exec($ch);<br>
+echo $response;<br>
+?&gt;
+                </div>
+            </div>
+            <div id="status-py" class="code-tab">
+                <div class="code-container">
+import requests<br><br>
+API_KEY = 'dp_your_api_key_here'<br>
+url = 'https://pay.digitalpedia.web.id/api/deposit/status'<br><br>
+response = requests.post(url, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;json={'deposit_id': 'DP-1002'},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers={'x-api-key': API_KEY}<br>
+)<br>
+print(response.json())
+                </div>
+            </div>
+            
+            <div class="code-container">
+{
+  "success": true,
+  "status": "success",
+  "message": "Pembayaran diverifikasi"
+}
+            </div>
+        </div>
+
+        <!-- ENDPOINT CANCEL DEPOSIT -->
+        <div class="doc-card">
+            <h2><i class="fas fa-ban"></i> 4. Cancel Deposit</h2>
+            <p>Membatalkan deposit yang masih dalam status pending. Deposit yang sudah dibayar atau expired tidak dapat dibatalkan.</p>
+            <div style="margin: 15px 0;">
+                <span class="method-badge">POST</span>
+                <code class="endpoint-url">/api/deposit/cancel</code>
+            </div>
+            <table class="param-table">
+                <tr><th>Header</th><th>Deskripsi</th></tr>
+                <tr><td class="param-name">x-api-key</td><td>API Key unik Anda <span class="required-tag">WAJIB</span></td></tr>
+                <tr><th>Body (JSON)</th><th>Tipe</th><th>Deskripsi</th></tr>
+                <tr><td class="param-name">deposit_id</td><td>String</td><td>ID Transaksi yang akan dibatalkan <span class="required-tag">WAJIB</span></td></tr>
+            </table>
+            
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showCode('cancel-js')">JavaScript</button>
+                <button class="tab-btn" onclick="showCode('cancel-php')">PHP</button>
+                <button class="tab-btn" onclick="showCode('cancel-py')">Python</button>
+            </div>
+            
+            <div id="cancel-js" class="code-tab active">
+                <div class="code-container">
+const axios = require('axios');<br><br>
+const API_KEY = 'dp_your_api_key_here';<br>
+const BASE_URL = 'https://pay.digitalpedia.web.id/api';<br><br>
+async function cancelDeposit(depositId) {<br>
+&nbsp;&nbsp;try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const res = await axios.post(`${BASE_URL}/deposit/cancel`, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ deposit_id: depositId },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ headers: { 'x-api-key': API_KEY } }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log(res.data);<br>
+&nbsp;&nbsp;} catch(err) { console.error(err.response?.data); }<br>
+}<br>
+cancelDeposit('DP-1002');
+                </div>
+            </div>
+            <div id="cancel-php" class="code-tab">
+                <div class="code-container">
+&lt;?php<br>
+$apiKey = 'dp_your_api_key_here';<br>
+$depositId = 'DP-1002';<br>
+$url = 'https://pay.digitalpedia.web.id/api/deposit/cancel';<br><br>
+$data = json_encode(['deposit_id' => $depositId]);<br>
+$ch = curl_init($url);<br>
+curl_setopt($ch, CURLOPT_POST, true);<br>
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['x-api-key: ' . $apiKey, 'Content-Type: application/json']);<br>
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);<br>
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);<br>
+$response = curl_exec($ch);<br>
+echo $response;<br>
+?&gt;
+                </div>
+            </div>
+            <div id="cancel-py" class="code-tab">
+                <div class="code-container">
+import requests<br><br>
+API_KEY = 'dp_your_api_key_here'<br>
+url = 'https://pay.digitalpedia.web.id/api/deposit/cancel'<br><br>
+response = requests.post(url, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;json={'deposit_id': 'DP-1002'},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers={'x-api-key': API_KEY}<br>
+)<br>
+print(response.json())
+                </div>
+            </div>
+            
+            <div class="code-container">
+{
+  "success": true,
+  "message": "Deposit dibatalkan"
+}
+            </div>
+
+            <div class="code-container" style="border-left: 4px solid #ef4444;">
+// Contoh response error (deposit sudah dibayar)<br>
+{
+  "success": false,
+  "error": "Deposit tidak bisa dibatalkan"
+}
+            </div>
+        </div>
+
+        <div class="doc-card gradient-card">
+            <h2 style="color: white;"><i class="fas fa-headset"></i> Butuh Integrasi Khusus?</h2>
+            <p style="color: #94a3b8;">Tim kami siap membantu Anda 24/7 untuk masalah teknis maupun integrasi API ke panel Anda sendiri.</p>
+            <a href="chat.html" style="display: inline-block; background: var(--primary); color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600; margin-top: 16px; transition: var(--transition);">Hubungi Engineer →</a>
+        </div>
+
+    </div>
+
+    <a href="chat.html" class="float-chat">
+        <i class="fas fa-comment-dots"></i>
+    </a>
+
+    <script>
+        function showCode(tabId) {
+            const allCodeTabs = document.querySelectorAll('.code-tab');
+            allCodeTabs.forEach(tab => tab.classList.remove('active'));
+            
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) targetTab.classList.add('active');
+            
+            const parentCard = targetTab?.closest('.doc-card');
+            if (parentCard) {
+                const btns = parentCard.querySelectorAll('.tab-btn');
+                btns.forEach(btn => btn.classList.remove('active'));
+                const suffix = tabId.split('-')[1];
+                const activeBtn = Array.from(btns).find(btn => btn.textContent.toLowerCase().includes(suffix));
+                if (activeBtn) activeBtn.classList.add('active');
+            }
+        }
+
+        let currentUser = null;
+        async function loadUser() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) { window.location.href = '/'; return; }
+            currentUser = JSON.parse(userStr);
+        }
+        
+        document.getElementById('logoutBtn').onclick = () => {
+            if(confirm('Yakin ingin mengakhiri sesi?')) {
+                localStorage.removeItem('user');
+                window.location.href = '/';
+            }
+        };
+        
+        loadUser();
+    </script>
+</body>
+</html>

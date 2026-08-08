@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil & API - DigitalPedia</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0061ff;
+            --dark-blue: #004ecc;
+            --sidebar-bg: #0f172a;
+            --bg-body: #f4f7fe;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: #1e293b; }
+
+        /* NAVBAR MOBILE */
+        .mobile-header {
+            display: none; position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: var(--white); padding: 0 20px;
+            align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 999;
+        }
+        .menu-toggle { font-size: 22px; color: var(--sidebar-bg); cursor: pointer; background: none; border: none; }
+        .mobile-brand { font-weight: 700; color: var(--primary-blue); font-size: 16px; }
+
+        /* SIDEBAR */
+        .sidebar { 
+            width: 260px; background: var(--sidebar-bg); color: white; 
+            position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; 
+            transition: var(--transition); 
+        }
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .sidebar-header img { width: 60px; height: 60px; border-radius: 15px; margin-bottom: 12px; object-fit: cover; border: 2px solid var(--primary-blue); }
+        .sidebar-header h2 { font-size: 16px; font-weight: 700; color: #fff; }
+        .close-sidebar { display: none; position: absolute; top: 20px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; }
+
+        .nav-menu { padding: 20px 15px; }
+        .nav-item { 
+            display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+            color: #94a3b8; text-decoration: none; border-radius: 12px; 
+            margin-bottom: 5px; transition: var(--transition); font-size: 14px; font-weight: 600;
+        }
+        .nav-item:hover, .nav-item.active { background: var(--primary-blue); color: white; }
+        .nav-item i { width: 20px; text-align: center; font-size: 18px; }
+
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 998; }
+
+        /* MAIN CONTENT */
+        .main-content { margin-left: 260px; padding: 30px; transition: var(--transition); }
+        .container-box { max-width: 800px; margin: 0 auto; }
+
+        .page-title { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+        .page-subtitle { font-size: 13px; color: #64748b; margin-bottom: 25px; }
+
+        /* CARD STYLE */
+        .card { 
+            background: white; padding: 25px; border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px;
+        }
+        .card-title { font-size: 16px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: #0f172a; }
+        .card-title-icon { background: var(--primary-blue); color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+        /* PROFILE GRID */
+        .profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px; margin-left: 4px; }
+        .form-group input { 
+            width: 100%; padding: 12px 15px; border-radius: 12px; 
+            border: 1px solid #e2e8f0; background: #f8fafc; 
+            font-size: 14px; font-weight: 600; color: #1e293b; outline: none;
+        }
+
+        /* API KEY BOX */
+        .api-container { background: #f8fafc; border: 2px dashed #e2e8f0; padding: 15px; border-radius: 15px; margin-top: 10px; }
+        .api-input-group { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
+        .api-input-group input { 
+            flex: 1; background: transparent; border: none; font-family: monospace; 
+            font-size: 15px; font-weight: 700; color: var(--primary-blue); outline: none;
+        }
+
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-api { 
+            flex: 1; min-width: 120px; padding: 10px; border-radius: 10px; border: none; 
+            font-weight: 700; font-size: 13px; cursor: pointer; transition: var(--transition);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-copy { background: #0f172a; color: white; }
+        .btn-reg { background: var(--primary-blue); color: white; }
+        .btn-api:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        @media (max-width: 991px) {
+            .mobile-header { display: flex; }
+            .close-sidebar { display: block; }
+            .sidebar { left: -260px; }
+            .sidebar.active { left: 0; }
+            .sidebar-overlay.active { display: block; }
+            .main-content { margin-left: 0; padding: 90px 20px 30px 20px; }
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mobile-header">
+    <button class="menu-toggle" id="openMenu"><i class="fa-solid fa-bars"></i></button>
+    <div class="mobile-brand">DigitalPedia</div>
+    <div style="width: 22px;"></div>
+</div>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <button class="close-sidebar" id="closeMenu"><i class="fa-solid fa-xmark"></i></button>
+        <img src="https://files.catbox.moe/ovxhs0.jpg" alt="Logo">
+        <h2>DigitalPedia</h2>
+    </div>
+    <div class="nav-menu">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> <span>Dashboard</span></a>
+        <a href="deposit.html" class="nav-item"><i class="fa-solid fa-wallet"></i> <span>Deposit</span></a>
+        <a href="withdraw.html" class="nav-item"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Penarikan</span></a>
+        <a href="riwayat.html" class="nav-item"><i class="fa-solid fa-history"></i> <span>Riwayat</span></a>
+        <a href="profile.html" class="nav-item active"><i class="fa-solid fa-user-gear"></i> <span>Profile & API</span></a>
+        <a href="#" class="nav-item" id="logoutBtn" style="color: #ff4d4d; margin-top: 20px;"><i class="fa-solid fa-sign-out-alt"></i> <span>Keluar</span></a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="container-box">
+        
+        <h1 class="page-title">Profil Pengguna</h1>
+        <p class="page-subtitle">Kelola informasi akun dan akses API developer Anda.</p>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-icon"><i class="fa-solid fa-id-card"></i></div>
+                Data Identitas
+            </div>
+            <div class="profile-grid">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="profUser" readonly>
+                </div>
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="text" id="profId" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Total Saldo</label>
+                    <input type="text" id="profBalance" readonly style="color: var(--primary-blue); font-weight: 800;">
+                </div>
+                <div class="form-group">
+                    <label>Tanggal Bergabung</label>
+                    <input type="text" id="profJoin" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-icon"><i class="fa-solid fa-key"></i></div>
+                Integrasi API Key
+            </div>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 15px;">
+                Gunakan Kunci API ini untuk melakukan transaksi via Host-to-Host (H2H). Jangan bagikan kunci ini kepada siapapun.
+            </p>
+
+            <div class="api-container">
+                <div class="api-input-group">
+                    <i class="fa-solid fa-lock" style="color: #94a3b8;"></i>
+                    <input type="text" id="apiKey" readonly value="Belum di-generate">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-api btn-copy" id="btnCopy">
+                        <i class="fa-solid fa-copy"></i> Salin Kunci
+                    </button>
+                    <button class="btn-api btn-reg" id="btnRegen">
+                        <i class="fa-solid fa-arrows-rotate"></i> Regenerate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+
+    // Sidebar Logic
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('openMenu').onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); }
+    document.getElementById('closeMenu').onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); }
+
+    function formatRupiah(angka) { 
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); 
+    }
+
+    async function loadProfile() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) { window.location.href = '/'; return; }
+        currentUser = JSON.parse(userStr);
+
+        document.getElementById('profUser').value = currentUser.username;
+        document.getElementById('profId').value = '#' + currentUser.id;
+        document.getElementById('profBalance').value = formatRupiah(currentUser.balance);
+        document.getElementById('profJoin').value = new Date(currentUser.created_at || Date.now()).toLocaleDateString('id-ID', {
+            day: 'numeric', month: 'long', year: 'numeric'
+        });
+        document.getElementById('apiKey').value = currentUser.apiKey || 'Klik Regenerate';
+    }
+
+    // Salin API Key
+    document.getElementById('btnCopy').onclick = () => {
+        const key = document.getElementById('apiKey').value;
+        if(key === 'Klik Regenerate') return;
+        navigator.clipboard.writeText(key);
+        const btn = document.getElementById('btnCopy');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin!';
+        setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Salin Kunci'; }, 2000);
+    };
+
+    // Regenerate API Key
+    document.getElementById('btnRegen').onclick = async () => {
+        if (!confirm('Ganti API Key sekarang? Kunci lama tidak akan bisa digunakan lagi.')) return;
+        
+        const btn = document.getElementById('btnRegen');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+        
+        try {
+            const res = await axios.post('/api/regenerate-apikey', { user_id: currentUser.id });
+            if (res.data.success) {
+                document.getElementById('apiKey').value = res.data.apiKey;
+                currentUser.apiKey = res.data.apiKey;
+                localStorage.setItem('user', JSON.stringify(currentUser));
+                alert('API Key baru berhasil dibuat!');
+            }
+        } catch(e) {
+            alert('Gagal generate ulang');
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> Regenerate';
+    };
+
+    document.getElementById('logoutBtn').onclick = () => {
+        localStorage.removeItem('user');
+        window.location.href = '/';
+    };
+
+    loadProfile();
+</script>
+</body>
+</html>

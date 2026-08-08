@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Support - DigitalPedia</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0061ff;
+            --sidebar-bg: #0f172a;
+            --bg-body: #f4f7fe;
+            --chat-bg: #e6effb;
+            --white: #ffffff;
+            --user-bubble: #0061ff;
+            --admin-bubble: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: #1e293b; overflow: hidden; }
+
+        /* SIDEBAR (Konsisten dengan halaman lain) */
+        .sidebar { width: 260px; background: var(--sidebar-bg); color: white; position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; transition: var(--transition); }
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-header img { width: 60px; height: 60px; border-radius: 15px; margin-bottom: 12px; border: 2px solid var(--primary-blue); background: white; padding: 5px; }
+        .nav-menu { padding: 20px 15px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: #94a3b8; text-decoration: none; border-radius: 12px; margin-bottom: 5px; transition: var(--transition); font-size: 14px; font-weight: 600; }
+        .nav-item:hover, .nav-item.active { background: var(--primary-blue); color: white; }
+        .nav-item i { width: 20px; text-align: center; }
+
+        /* MAIN CHAT AREA */
+        .main-content { margin-left: 260px; height: 100vh; display: flex; flex-direction: column; position: relative; }
+        
+        /* CHAT HEADER */
+        .chat-header { background: var(--white); padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 15px rgba(0,0,0,0.04); z-index: 10; }
+        .cs-info { display: flex; align-items: center; gap: 12px; }
+        .cs-avatar { width: 45px; height: 45px; background: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; position: relative; }
+        .cs-avatar::after { content: ''; width: 12px; height: 12px; background: #10b981; border: 2px solid white; position: absolute; bottom: 0; right: 0; border-radius: 50%; }
+        .cs-status h4 { font-size: 15px; font-weight: 700; color: #0f172a; }
+        .cs-status p { font-size: 12px; color: #10b981; font-weight: 600; }
+
+        /* MESSAGES CONTAINER */
+        .chat-container { flex: 1; overflow-y: auto; padding: 25px; background: var(--chat-bg); background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); display: flex; flex-direction: column; gap: 15px; }
+        
+        /* CHAT BUBBLES */
+        .message { max-width: 70%; padding: 12px 18px; border-radius: 18px; font-size: 14px; line-height: 1.5; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .message strong { display: block; font-size: 11px; margin-bottom: 4px; opacity: 0.7; }
+
+        .message-user { background: var(--user-bubble); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .message-admin { background: var(--admin-bubble); color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; }
+
+        /* INPUT AREA */
+        .chat-footer { background: var(--white); padding: 20px 30px; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); }
+        .input-group { display: flex; align-items: center; background: #f1f5f9; padding: 8px 15px; border-radius: 15px; gap: 15px; border: 1px solid #e2e8f0; }
+        .input-group input { flex: 1; border: none; background: transparent; padding: 10px 0; outline: none; font-family: inherit; font-size: 14px; font-weight: 500; }
+        .send-btn { background: var(--primary-blue); border: none; width: 40px; height: 40px; border-radius: 12px; color: white; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .send-btn:hover { transform: scale(1.05) rotate(-10deg); background: var(--dark-blue); }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 991px) {
+            .sidebar { left: -260px; }
+            .sidebar.active { left: 0; }
+            .main-content { margin-left: 0; }
+            .message { max-width: 85%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="https://files.catbox.moe/ovxhs0.jpg" alt="Logo">
+        <h2 style="font-size: 16px;">DigitalPedia H2H</h2>
+    </div>
+    <div class="nav-menu">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Beranda</span></a>
+        <a href="deposit.html" class="nav-item"><i class="fa-solid fa-wallet"></i><span>Deposit</span></a>
+        <a href="withdraw.html" class="nav-item"><i class="fa-solid fa-money-bill-transfer"></i><span>Penarikan</span></a>
+        <a href="riwayat.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat</span></a>
+        <a href="profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i><span>Profil & API</span></a>
+        <a href="chat.html" class="nav-item active"><i class="fa-solid fa-headset"></i><span>Chat CS</span></a>
+        <a href="#" class="nav-item" id="logoutBtn" style="color:#ef4444; margin-top:30px;"><i class="fa-solid fa-power-off"></i><span>Logout</span></a>
+    </div>
+</div>
+
+<div class="main-content">
+    <header class="chat-header">
+        <div class="cs-info">
+            <div class="cs-avatar"><i class="fa-solid fa-headset"></i></div>
+            <div class="cs-status">
+                <h4>Customer Support</h4>
+                <p>Online • Siap Membantu</p>
+            </div>
+        </div>
+        <button id="mobileMenu" style="background:none; border:none; font-size: 20px; display:none;"><i class="fa-solid fa-bars"></i></button>
+    </header>
+
+    <div class="chat-container" id="chatMessages">
+        </div>
+
+    <footer class="chat-footer">
+        <div class="input-group">
+            <input type="text" id="chatInput" placeholder="Ketik pesan Anda di sini...">
+            <button class="send-btn" id="sendChatBtn"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </footer>
+</div>
+
+<script>
+    let currentUser = null;
+    const sidebar = document.getElementById('sidebar');
+
+    // Load User dari LocalStorage
+    async function loadUser() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) { window.location.href = '/'; return; }
+        currentUser = JSON.parse(userStr);
+    }
+
+    // Ambil Data Chat dari API
+    async function loadChat() {
+        try {
+            const res = await axios.get(`/api/chat/conversation/${currentUser.id}`);
+            const container = document.getElementById('chatMessages');
+            
+            container.innerHTML = res.data.map(m => `
+                <div class="message ${m.from_owner ? 'message-admin' : 'message-user'}">
+                    <strong>${m.from_owner ? 'Support Agent' : 'Anda'}</strong>
+                    ${m.message}
+                </div>
+            `).join('');
+            
+            // Auto scroll ke bawah
+            container.scrollTop = container.scrollHeight;
+        } catch (err) {
+            console.error("Gagal memuat chat");
+        }
+    }
+
+    // Kirim Pesan
+    document.getElementById('sendChatBtn').onclick = async () => {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        try {
+            await axios.post('/api/chat/send', { 
+                user_id: currentUser.id, 
+                username: currentUser.username, 
+                message: msg 
+            });
+            input.value = '';
+            loadChat(); // Refresh chat langsung
+        } catch (err) {
+            alert("Gagal mengirim pesan");
+        }
+    };
+
+    // Enter untuk kirim
+    document.getElementById('chatInput').onkeypress = (e) => {
+        if (e.key === 'Enter') document.getElementById('sendChatBtn').click();
+    };
+
+    // Logout
+    document.getElementById('logoutBtn').onclick = () => { 
+        localStorage.removeItem('user'); 
+        window.location.href = '/'; 
+    };
+
+    // Toggle Menu Mobile
+    document.body.addEventListener('click', (e) => {
+        if (window.innerWidth <= 991 && e.target.closest('#mobileMenu')) {
+            sidebar.classList.toggle('active');
+        }
+    });
+
+    // Jalankan awal
+    loadUser().then(() => { 
+        loadChat(); 
+        setInterval(loadChat, 5000); // Polling setiap 5 detik
+    });
+</script>
+</body>
+</html>

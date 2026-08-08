@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw Saldo - DigitalPedia</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0061ff;
+            --dark-blue: #004ecc;
+            --sidebar-bg: #0f172a;
+            --bg-body: #f4f7fe;
+            --white: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: #1e293b; }
+
+        /* NAVBAR MOBILE */
+        .mobile-header {
+            display: none; position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: var(--white); padding: 0 20px;
+            align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 999;
+        }
+        .menu-toggle { font-size: 22px; color: var(--sidebar-bg); cursor: pointer; background: none; border: none; }
+        .mobile-brand { font-weight: 700; color: var(--primary-blue); font-size: 16px; }
+
+        /* SIDEBAR */
+        .sidebar { 
+            width: 260px; background: var(--sidebar-bg); color: white; 
+            position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; 
+            transition: var(--transition); 
+        }
+        .sidebar-header { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .sidebar-header img { width: 60px; height: 60px; border-radius: 15px; margin-bottom: 12px; object-fit: cover; border: 2px solid var(--primary-blue); }
+        .sidebar-header h2 { font-size: 16px; font-weight: 700; color: #fff; }
+        .close-sidebar { display: none; position: absolute; top: 20px; right: 20px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; }
+
+        .nav-menu { padding: 20px 15px; }
+        .nav-item { 
+            display: flex; align-items: center; gap: 12px; padding: 12px 15px; 
+            color: #94a3b8; text-decoration: none; border-radius: 12px; 
+            margin-bottom: 5px; transition: var(--transition); font-size: 14px; font-weight: 600;
+        }
+        .nav-item:hover, .nav-item.active { background: var(--primary-blue); color: white; }
+        .nav-item i { width: 20px; text-align: center; font-size: 18px; }
+
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 998; }
+
+        /* MAIN CONTENT */
+        .main-content { margin-left: 260px; padding: 30px; transition: var(--transition); }
+        .container-box { max-width: 600px; margin: 0 auto; }
+
+        .page-title { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+        .page-subtitle { font-size: 13px; color: #64748b; margin-bottom: 25px; }
+
+        /* CARD STYLE */
+        .card { 
+            background: white; padding: 25px; border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px;
+        }
+        .card-title { font-size: 16px; font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; color: #0f172a; }
+        .card-title-icon { background: #0f172a; color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+        /* INFO SALDO TERSEDIA */
+        .balance-display-label { font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 4px; }
+        .balance-display-amount { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 15px; }
+
+        /* FORM ELEMENTS */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper input, .input-wrapper select { 
+            width: 100%; padding: 12px 14px; border-radius: 10px; 
+            border: 1px solid #e2e8f0; background: #fff; font-size: 14px; 
+            font-weight: 600; outline: none; transition: var(--transition); color: #1e293b;
+        }
+        .input-wrapper input:focus, .input-wrapper select:focus { border-color: var(--primary-blue); background: white; }
+
+        /* BAR INFO FEE */
+        .fee-info-bar {
+            background: #f8fafc; padding: 12px 16px; border-radius: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 20px;
+        }
+
+        .btn-submit { 
+            width: 100%; background: #0f172a; color: white; border: none; 
+            padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; 
+            font-size: 14px; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit:hover { background: #1e293b; }
+
+        /* BOX NOTIFIKASI */
+        .alert-box { background: #ecfdf5; border: 1px solid #a7f3d0; padding: 15px; border-radius: 12px; color: #065f46; font-size: 13px; font-weight: 600; margin-top: 15px; display: none; }
+
+        @media (max-width: 991px) {
+            .mobile-header { display: flex; }
+            .close-sidebar { display: block; }
+            .sidebar { left: -260px; }
+            .sidebar.active { left: 0; }
+            .sidebar-overlay.active { display: block; }
+            .main-content { margin-left: 0; padding: 90px 20px 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mobile-header">
+    <button class="menu-toggle" id="openMenu"><i class="fa-solid fa-bars"></i></button>
+    <div class="mobile-brand">DigitalPedia</div>
+    <div style="width: 22px;"></div>
+</div>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <button class="close-sidebar" id="closeMenu"><i class="fa-solid fa-xmark"></i></button>
+        <img src="https://files.catbox.moe/ovxhs0.jpg" alt="Logo">
+        <h2>DigitalPedia</h2>
+    </div>
+    <div class="nav-menu">
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-house"></i> <span>Dashboard</span></a>
+        <a href="deposit.html" class="nav-item"><i class="fa-solid fa-wallet"></i> <span>Deposit</span></a>
+        <a href="withdraw.html" class="nav-item active"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Penarikan</span></a>
+        <a href="riwayat.html" class="nav-item"><i class="fa-solid fa-history"></i> <span>Riwayat</span></a>
+        <a href="profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i> <span>Profile & API</span></a>
+        <a href="#" class="nav-item" id="logoutBtn" style="color: #ff4d4d; margin-top: 20px;"><i class="fa-solid fa-sign-out-alt"></i> <span>Keluar</span></a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="container-box">
+        
+        <h1 class="page-title">Withdraw Saldo</h1>
+        <p class="page-subtitle">Cairkan saldo Anda ke rekening atau e-wallet pilihan.</p>
+
+        <!-- CARD INFO SALDO TERSEDIA -->
+        <div class="card">
+            <div class="balance-display-label">Saldo Tersedia :</div>
+            <div class="balance-display-amount">Rp <span id="userBalance">0</span></div>
+        </div>
+
+        <!-- CARD PENARIKAN BARU -->
+        <div class="card">
+            <div class="card-title">
+                <div class="card-title-icon"><i class="fa-solid fa-wallet"></i></div>
+                Ajukan Penarikan Baru
+            </div>
+
+            <div class="form-group">
+                <label>Pilih Metode E-Wallet</label>
+                <div class="input-wrapper">
+                    <select id="operator">
+                        <option value="dana">DANA</option>
+                        <option value="ovo">OVO</option>
+                        <option value="gopay">GoPay</option>
+                        <option value="shopeepay">ShopeePay</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nomor Tujuan (No HP / ID)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="accountNumber" placeholder="Contoh: 085135380497">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nominal Penarikan (Min. Rp 10,000)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="withdrawAmount" placeholder="Contoh: 50000">
+                </div>
+                <p style="font-size: 11px; color: #94a3b8; margin-top: 5px;">Proses Penarikan 1 x 24 Jam</p>
+            </div>
+
+            <div class="fee-info-bar">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-circle-info" style="color: #0061ff;"></i>
+                    <span>Biaya Admin (Fee)</span>
+                </div>
+                <div style="font-weight: 700; color: #0f172a;">Rp 2.000</div>
+            </div>
+
+            <button class="btn-submit" id="withdrawBtn">
+                <i class="fa-solid fa-paper-plane"></i> Proses Penarikan
+            </button>
+
+            <div class="alert-box" id="msgSuccess"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+
+    // Sidebar Menu Handler
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    document.getElementById('openMenu').onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); }
+    document.getElementById('closeMenu').onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); }
+    overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); }
+
+    function formatRupiah(angka) { 
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); 
+    }
+    
+    async function loadUser() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) { window.location.href = '/'; return; }
+        currentUser = JSON.parse(userStr);
+        document.getElementById('userBalance').innerText = currentUser.balance.toLocaleString();
+    }
+    
+    loadUser();
+
+    // Aksi Form Request Withdraw
+    document.getElementById('withdrawBtn').onclick = async () => {
+        const amount = parseInt(document.getElementById('withdrawAmount').value);
+        const operator = document.getElementById('operator').value;
+        const account_number = document.getElementById('accountNumber').value.trim();
+        
+        if (isNaN(amount) || amount < 10000) { alert('Minimal penarikan Rp10.000'); return; }
+        if (amount > currentUser.balance) { alert('Saldo tidak cukup'); return; }
+        if (!account_number) { alert('Nomor tujuan harus diisi'); return; }
+        
+        const btn = document.getElementById('withdrawBtn'); 
+        btn.disabled = true; 
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        
+        try {
+            const res = await axios.post('/api/withdraw/create', { 
+                user_id: currentUser.id, 
+                amount: amount, 
+                operator: operator, 
+                account_number: account_number 
+            });
+            
+            if (res.data.success) {
+                const wd = res.data.withdraw;
+                const msg = document.getElementById('msgSuccess');
+                msg.style.display = 'block';
+                msg.innerHTML = `✅ <b>Penarikan Berhasil Diajukan!</b><br>Total Terima: ${formatRupiah(wd.total_diterima || (amount - 2000))}`;
+                
+                document.getElementById('withdrawAmount').value = '';
+                document.getElementById('accountNumber').value = '';
+                
+                await refreshBalance();
+            }
+        } catch(e) { 
+            alert('Gagal: ' + (e.response?.data?.error || e.message)); 
+        }
+        
+        btn.disabled = false; 
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Proses Penarikan';
+    };
+
+    // Sinkronisasi Sisa Saldo
+    async function refreshBalance() { 
+        if (!currentUser) return; 
+        try { 
+            const res = await axios.get(`/api/user/${currentUser.id}`); 
+            if (res.data) { 
+                currentUser.balance = res.data.balance; 
+                localStorage.setItem('user', JSON.stringify(currentUser)); 
+                document.getElementById('userBalance').innerText = currentUser.balance.toLocaleString(); 
+            } 
+        } catch(e) {} 
+    }
+
+    document.getElementById('logoutBtn').onclick = () => { 
+        localStorage.removeItem('user'); 
+        window.location.href = '/'; 
+    };
+</script>
+</body>
+</html>
